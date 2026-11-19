@@ -68,12 +68,9 @@ async function screens(browser: Browser, locale: string, formSeed: string, event
   await page.getByRole("button", { name: t("Hand in what I have", "Entregar o que tenho") }).click();
   await shot(page, locale, "Window");
   await page.getByRole("button", { name: t("Back to the hall", "Voltar ao saguão") }).click();
-  // Fill the form halfway, honestly but on autopilot (and in black pen).
+  // The form as you get it: blank.
   const form = await page.evaluate(() => [...(window as unknown as Hook).__cartorio.game.forms.keys()][0] as string);
   await page.evaluate((f) => (window as unknown as Hook).__cartorio.openForm(f), form);
-  const inputs = page.locator(".desk input[type=text]");
-  const name = await page.evaluate(() => (window as unknown as Hook).__cartorio.chain.profile.fullName as string);
-  if ((await inputs.count()) > 0) await inputs.nth(0).fill(name);
   await shot(page, locale, "Form");
   await page.getByRole("button", { name: t("Put it back in the folder", "Guardar na pasta") }).click();
   await page.getByRole("button", { name: new RegExp(t("Take a ticket for Window 1", "Retirar senha para o Guichê 1")) }).last().click();

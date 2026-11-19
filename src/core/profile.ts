@@ -155,3 +155,23 @@ export function ageOn(profile: Profile, on: { year: number; month: number; day: 
   if (on.month < birth.month || (on.month === birth.month && on.day < birth.day)) age--;
   return age;
 }
+
+/** The same person, renamed: name fields, signature and the mother's surname follow the new name. */
+export function withName(profile: Profile, fullName: string): Profile {
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length < 2)
+    throw new RangeError(`A name needs a first name and a surname: ${fullName}`);
+  const firstName = parts[0]!;
+  const lastName = parts[parts.length - 1]!;
+  const motherParts = profile.motherName.split(" ");
+  motherParts[motherParts.length - 1] = lastName;
+  return {
+    ...profile,
+    firstName,
+    middleName: parts.slice(1, -1).join(" "),
+    lastName,
+    fullName: parts.join(" "),
+    signature: `${firstName[0]}. ${lastName}`,
+    motherName: motherParts.join(" "),
+  };
+}

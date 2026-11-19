@@ -7,7 +7,22 @@ import type { PlayContext } from "./context";
 import { clear, h, setText } from "./dom";
 import { folderPanel } from "./folder";
 import { lineText, lineTone, statusText, ticketLabel } from "./format";
-import { HALL_H, HALL_W, boothCenter, drawHall, type HallScene } from "./hall";
+import { HALL_H, HALL_W, boothRect, drawHall, type HallScene } from "./hall";
+import hallPhotoUrl from "../assets/hall.jpg";
+
+/** The hall render, loaded once, only when the hall is first shown on a wide screen. */
+let hallPhoto: HTMLImageElement | null = null;
+function loadHallPhoto(onReady: () => void): HTMLImageElement | null {
+  if (typeof Image === "undefined") return null;
+  if (!hallPhoto) {
+    hallPhoto = new Image();
+    hallPhoto.decoding = "async";
+    hallPhoto.src = hallPhotoUrl;
+  }
+  if (hallPhoto.complete && hallPhoto.naturalWidth > 0) return hallPhoto;
+  hallPhoto.addEventListener("load", onReady, { once: true });
+  return null;
+}
 import { stamp } from "./stamp";
 
 type View = "hall" | "queue" | "window";
@@ -225,17 +240,22 @@ export class PlayScreen {
       const text = h("span");
       const chip = h("span", { class: "chip" }, h("span", { class: "dot" }), text);
       const role = t(locale, `windows.${id}.role`);
+      const r = boothRect(id);
       const btn = h(
         "button",
         {
           class: "booth-btn",
           type: "button",
-          style: { left: `${boothCenter(id) * 100}%` },
+          style: {
+            left: `${r.x * 100}%`,
+            top: `${r.y * 100}%`,
+            width: `${r.w * 100}%`,
+            height: `${(r.h + 0.07) * 100}%`,
+          },
           "aria-label": t(locale, "hall.take", { window: windowName(locale, id), role }),
           onclick: () => this.takeTicket(id),
         },
         chip,
-        h("span", { class: "take", "aria-hidden": "true" }, `${windowName(locale, id)} · ${role}`),
       );
       const rowText = h("span");
       const row = h(
@@ -276,6 +296,7 @@ export class PlayScreen {
         "div",
         { class: "hall" },
         canvas,
+        h("span", { class: "hall-hint", "aria-hidden": "true" }, t(locale, "hall.hint")),
         booths.map((b) => b.btn),
       ),
       h(
@@ -351,11 +372,21 @@ export class PlayScreen {
         sign: (id) => windowName(locale, id).toUpperCase(),
       },
     };
-    const key = JSON.stringify({ ...scene, labels: locale });
+    if (
+      this.canvas.offsetParent === null &&
+      typeof window !== "undefined" &&
+      window.innerWidth <= 860
+    )
+      return; // phone: list instead
+    const photo = loadHallPhoto(() => {
+      this.sceneKey = "";
+      this.drawHallIfNeeded();
+    });
+    const key = JSON.stringify({ ...scene, labels: locale, photo: Boolean(photo) });
     if (key === this.sceneKey) return;
     this.sceneKey = key;
     const ctx2d = this.canvas.getContext("2d");
-    if (ctx2d) drawHall(ctx2d, scene);
+    if (ctx2d) drawHall(ctx2d, scene, photo);
   }
 
   private renderQueue(): HTMLElement {

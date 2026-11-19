@@ -10,8 +10,8 @@
 
 ## Decisions (quick)
 
-- [ ] **Hall art.** The hall on the canvas (board 2) is an image. Where does the game's hall come from, and can it ship under MIT? Options: (a) the canvas image, if its licence allows; (b) a 3D render you make; (c) drawn in Canvas 2D from shapes (cheap, fully ours); (d) commissioned. Built: (c), a Canvas 2D placeholder (`src/ui/hall.ts`). (Roadmap task 22)
-- [ ] **Player's name on forms.** The mockups show your name ("Vinícius A. Barros"). Built: a fictional name and ID card generated from the seed (no personal data). Keep that, or let the player type a name (stored only in their browser)?
+- [x] ~~**Hall art.**~~ Your render from the canvas mockup is the game's hall now (19 Nov 2026), with the live state painted over it. If you re-render it, keep the camera, or tell me and I'll re-measure the window positions (`PHOTO` in `src/ui/hall.ts`).
+- [x] ~~**Player's name on forms.**~~ A random absurd name per run, from 24 in `src/content/names.ts` (19 Nov 2026). Add or swap names there; a test checks every form still works with each one.
 - [ ] **Challenge number.** The mockup shows "nº 323" on 19/11/2026, which is the day of the year and resets every January. Built: counted from `EPOCH_KEY` in `src/core/daily.ts`, set to 2026-11-19 = nº 1. Tell me the launch date and I'll move it. (Roadmap task 9)
 - [ ] **Daily rollover.** When does a new chain start? Built: midnight in the player's local time, like Wordle. Alternative: one global moment (00:00 UTC or 00:00 Brasília) so everyone switches together. (Roadmap task 9)
 - [ ] **Hosting and domain.** The result screen shows `[SEU DOMÍNIO]`. Pick a static host (GitHub Pages, Cloudflare Pages, Netlify) and whether to buy a domain. Built for GitHub Pages on the repo URL (the share text uses whatever address the game is served from). (Roadmap tasks 5, 50)

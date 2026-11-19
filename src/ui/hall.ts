@@ -8,8 +8,9 @@ import type { WindowStatus } from "../core/game";
  * over it, so the hall is usable with a keyboard and a screen reader.
  */
 
-export const HALL_W = 1280;
-export const HALL_H = 656;
+/** The canvas is 16:9, like the hall render (src/assets/hall.jpg, made by the developer). */
+export const HALL_W = 1600;
+export const HALL_H = 900;
 
 export interface HallScene {
   clock: string;
@@ -35,9 +36,33 @@ export interface HallScene {
   };
 }
 
+/**
+ * Where things are in the hall render, as fractions of its width and height. Measured on the
+ * 16:9 image; if the render changes, re-measure these.
+ */
+const PHOTO = {
+  booths: {
+    1: { x: 0.05, y: 0.378, w: 0.1375, h: 0.198 },
+    2: { x: 0.244, y: 0.384, w: 0.12, h: 0.187 },
+    3: { x: 0.415, y: 0.391, w: 0.1, h: 0.175 },
+    4: { x: 0.5635, y: 0.396, w: 0.0915, h: 0.164 },
+    5: { x: 0.694, y: 0.404, w: 0.071, h: 0.151 },
+  } as Record<WindowId, { x: number; y: number; w: number; h: number }>,
+  led: { x: 0.511, y: 0.213, w: 0.1415, h: 0.089 },
+  clock: { cx: 0.7475, cy: 0.2942, r: 0.0125 },
+  /** Where the first person in line stands (feet), as a fraction of the height. */
+  floorY: 0.84,
+};
+
+/** A booth's opening in the hall, as fractions of the hall (the DOM buttons sit exactly on it). */
+export function boothRect(id: WindowId): { x: number; y: number; w: number; h: number } {
+  return PHOTO.booths[id];
+}
+
 /** Horizontal centre of each booth, as a fraction of the hall width (shared with the DOM overlay). */
 export function boothCenter(id: WindowId): number {
-  return 0.12 + (id - 1) * 0.19;
+  const b = PHOTO.booths[id];
+  return b.x + b.w / 2;
 }
 
 const C = {
@@ -86,9 +111,139 @@ function person(ctx: CanvasRenderingContext2D, x: number, y: number, scale: numb
   ctx.fill();
 }
 
-export function drawHall(ctx: CanvasRenderingContext2D, scene: HallScene): void {
+/** The hall: the render with live state painted over it, or the drawn fallback if it didn't load. */
+export function drawHall(
+  ctx: CanvasRenderingContext2D,
+  scene: HallScene,
+  photo?: CanvasImageSource | null,
+): void {
+  if (photo) {
+    drawPhotoHall(ctx, scene, photo);
+    return;
+  }
+  ctx.save();
+  ctx.scale(HALL_W / 1280, HALL_H / 656);
+  drawFallbackHall(ctx, scene);
+  ctx.restore();
+}
+
+function drawPhotoHall(
+  ctx: CanvasRenderingContext2D,
+  scene: HallScene,
+  photo: CanvasImageSource,
+): void {
   const W = HALL_W;
   const H = HALL_H;
+  ctx.drawImage(photo, 0, 0, W, H);
+  const img = (r: { x: number; y: number; w: number; h: number }) =>
+    [r.x * W, r.y * H, r.w * W, r.h * H] as const;
+  // The render's source size, to copy patches from it.
+  const sw = (photo as HTMLImageElement).naturalWidth || W;
+  const sh = (photo as HTMLImageElement).naturalHeight || H;
+  const src = (r: { x: number; y: number; w: number; h: number }) =>
+    [r.x * sw, r.y * sh, r.w * sw, r.h * sh] as const;
+
+  for (const b of scene.booths) {
+    const rect = PHOTO.booths[b.id];
+    const working = b.status === "open" || b.status === "outOfInk" || b.status === "systemDown";
+    if (working && b.id === 4) {
+      // The render has window 4 shuttered for lunch: open it with window 3's shelves.
+      ctx.drawImage(photo, ...src(PHOTO.booths[3]), ...img(rect));
+    } else if (!working) {
+      if (b.id !== 4) ctx.drawImage(photo, ...src(PHOTO.booths[4]), ...img(rect));
+      // A paper sign over the shutter (covers the render's own "ALMOÇO" note).
+      const [x, y, w, h] = img(rect);
+      const pw = Math.min(w * 0.7, 120);
+      const ph = 34;
+      ctx.fillStyle = "#fbfaf4";
+      ctx.fillRect(x + w / 2 - pw / 2, y + h * 0.42, pw, ph);
+      ctx.strokeStyle = "rgba(0,0,0,0.25)";
+      ctx.strokeRect(x + w / 2 - pw / 2, y + h * 0.42, pw, ph);
+      ctx.fillStyle = "#a8231c";
+      ctx.font = "bold 15px 'Courier Prime', monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(
+        b.status === "closed" ? scene.labels.closed : scene.labels.away,
+        x + w / 2,
+        y + h * 0.42 + ph / 2,
+        pw - 8,
+      );
+    }
+  }
+
+  // LED panel: today's ticket, not the render's.
+  const [lx, ly, lw, lh] = img(PHOTO.led);
+  ctx.fillStyle = "#070707";
+  ctx.fillRect(lx, ly, lw, lh);
+  ctx.fillStyle = scene.systemDown ? "#ffb020" : "#ff3a22";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  if (scene.systemDown) {
+    ctx.font = `${Math.round(lh * 0.32)}px VT323, monospace`;
+    ctx.fillText(scene.labels.systemDown, lx + lw / 2, ly + lh / 2, lw - 10);
+  } else {
+    ctx.font = `${Math.round(lh * 0.22)}px VT323, monospace`;
+    ctx.fillText(scene.labels.ticket, lx + lw * 0.27, ly + lh * 0.22);
+    ctx.fillText(scene.labels.window, lx + lw * 0.78, ly + lh * 0.22);
+    ctx.font = `${Math.round(lh * 0.52)}px VT323, monospace`;
+    ctx.fillText(scene.panelTicket, lx + lw * 0.27, ly + lh * 0.64);
+    ctx.fillText(scene.panelWindow, lx + lw * 0.78, ly + lh * 0.64);
+  }
+
+  // Wall clock hands.
+  const cx = PHOTO.clock.cx * W;
+  const cy = PHOTO.clock.cy * H;
+  const r = PHOTO.clock.r * W;
+  ctx.fillStyle = "#f4f4ef";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.86, 0, Math.PI * 2);
+  ctx.fill();
+  const [hh, mm] = scene.clock.split(":").map(Number) as [number, number];
+  ctx.strokeStyle = "#1c1d1a";
+  ctx.lineCap = "round";
+  const hand = (angle: number, len: number, width: number) => {
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.sin(angle) * len, cy - Math.cos(angle) * len);
+    ctx.stroke();
+  };
+  hand(((hh % 12) + mm / 60) * (Math.PI / 6), r * 0.45, 3);
+  hand(mm * (Math.PI / 30), r * 0.7, 2);
+
+  // People in line, from the counter towards you; you're in blue.
+  for (const b of scene.booths) {
+    const x0 = boothCenter(b.id) * W;
+    const total = Math.min(4, b.queue + (b.playerInLine ? 1 : 0));
+    for (let i = total - 1; i >= 0; i--) {
+      const isYou = b.playerInLine && i === total - 1;
+      const feet = (PHOTO.floorY + i * 0.035) * H;
+      const s = 1.7 + i * 0.22;
+      ctx.save();
+      ctx.globalAlpha = isYou ? 0.95 : 0.82;
+      person(
+        ctx,
+        x0 + (i % 2 === 0 ? -10 : 10) * s,
+        feet,
+        s,
+        isYou ? C.you : i % 2 ? "#4a4a44" : "#3a3a35",
+      );
+      ctx.restore();
+    }
+    if (b.playerAtWindow) {
+      ctx.save();
+      ctx.globalAlpha = 0.95;
+      person(ctx, x0, PHOTO.floorY * H - 6, 1.6, C.you);
+      ctx.restore();
+    }
+  }
+}
+
+function drawFallbackHall(ctx: CanvasRenderingContext2D, scene: HallScene): void {
+  const W = 1280;
+  const H = 656;
+  const boothCenter = (id: WindowId) => 0.12 + (id - 1) * 0.19;
   const floorY = H * 0.62;
 
   // Wall and floor.

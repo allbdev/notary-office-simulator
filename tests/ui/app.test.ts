@@ -13,7 +13,7 @@ function memory(): KeyValueStore {
 }
 
 let clock = 0;
-function makeApp(store = new Store(memory())) {
+function makeApp(store = new Store(memory()), random: () => number = () => 0) {
   document.body.innerHTML = '<div id="app"></div>';
   const app = new App({
     root: document.getElementById("app")!,
@@ -23,6 +23,7 @@ function makeApp(store = new Store(memory())) {
     raf: () => 0,
     perfNow: () => clock,
     clipboard: async () => {},
+    random,
   });
   app.start();
   return app;
@@ -147,5 +148,20 @@ describe("app", () => {
     button(/Back to the line|Take a ticket/)!.click();
     expect(app.screen).toBe("play");
     expect(app.game!.tick).toBe(0);
+  });
+
+  it("gives each player a random silly name for the run, kept across reloads", async () => {
+    const { PLAYER_NAMES } = await import("../../src/content/names");
+    const store = new Store(memory());
+    const app = makeApp(store, () => 0.5);
+    button(/Take a ticket/)!.click();
+    const name = PLAYER_NAMES[Math.floor(0.5 * PLAYER_NAMES.length)]!;
+    expect(app.chain.profile.fullName).toBe(name);
+    expect(document.querySelector(".id-card")?.textContent).toContain(name);
+    app.saveNow();
+    const again = makeApp(store, () => 0);
+    expect(again.chain.profile.fullName).toBe(name);
+    const other = makeApp(new Store(memory()), () => 0);
+    expect(other.chain.profile.fullName).toBe(PLAYER_NAMES[0]);
   });
 });

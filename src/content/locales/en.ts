@@ -47,6 +47,7 @@ const en = {
     streakOne: "Streak: 1 day",
   },
   hall: {
+    hint: "Click a window to take a ticket.",
     backToLine: "Back to my line",
     label: "The hall",
     open: "Open · line of {n}",

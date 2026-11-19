@@ -16,6 +16,8 @@ export interface SavedRun {
   seed: string;
   inputs: Input[];
   tick: number;
+  /** Index into PLAYER_NAMES: who you are in this run. */
+  name?: number;
   result?: RunResult;
 }
 

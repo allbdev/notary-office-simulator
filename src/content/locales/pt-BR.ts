@@ -46,6 +46,7 @@ const ptBR: LocaleDict = {
     streakOne: "Sequência: 1 dia",
   },
   hall: {
+    hint: "Clique num guichê para retirar a senha.",
     backToLine: "Voltar pra minha fila",
     label: "O saguão",
     open: "Aberto · fila de {n}",

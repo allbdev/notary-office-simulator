@@ -18,7 +18,7 @@ import {
   type StartDocId,
   type WindowId,
 } from "./docs";
-import { makeProfile, type Profile } from "./profile";
+import { makeProfile, withName, type Profile } from "./profile";
 import { createRng, type Rng } from "./rng";
 import { FEE_FORMS, PLAIN_FORMS } from "../content/forms";
 import { GOALS } from "../content/goals";
@@ -252,4 +252,9 @@ export function buildChain(seed: string, dateKeyValue: string, attempt = 0, gent
 /** Number of window visits the requirements need besides window 3. */
 export function stepCount(chain: Pick<Chain, "requirements">): number {
   return chain.requirements.reduce((sum, r) => sum + routeOf(r).length, 0);
+}
+
+/** The chain with the player's own name for the day (picked per player, outside the seed). */
+export function withPlayerName(chain: Chain, fullName: string): Chain {
+  return { ...chain, profile: withName(chain.profile, fullName) };
 }

@@ -128,7 +128,9 @@ A real cartório, played on real paper: a rendered hall (five guichês, queue pa
 
 All four are OFL and are self-hosted in the build (no runtime calls to Google Fonts).
 
-**The hall** is drawn in Canvas 2D from shapes (booths, glass, the LED panel, the wall clock, ropes, plastic chairs, people in line) as a placeholder until the hall art is decided (`TODO_FOR_YOU.md`).
+**The hall** is a 3D render made by the developer (`src/assets/hall.jpg`, shipped with the code under the same licence). The game paints live state over it in Canvas 2D: the LED panel's ticket, the wall clock's hands, shutters with a paper sign on windows at lunch or closed (window 4's shutter in the render opens when it's working), and the people in each line. Its signage stays in Portuguese in both languages, as in a real cartório; the clickable labels follow the language. If the image doesn't load, a hall drawn from shapes takes its place. Phones show the list layout instead.
+
+**The player** is a different absurd Brazilian name each run ("Jacinto Leite Aquino Rego", "Rolando Escada Abaixo", "Xerox de Andrade"…, `src/content/names.ts`), picked at random per player, not by the seed: friends on the same day get the same bureaucracy as different people. The rest of the ID card (CPF, RG, birth date, address) comes from the seed.
 
 **Screens on the canvas:** 1 Landing · 2 The hall · 3 At the window · 4 Filling a form · 5 Waiting in line · 6 Sent back · 7 Event: system down · 8 Result and share · Phone layouts (the hall becomes a list of windows; a form is one field at a time; the result fits one screenshot).
 

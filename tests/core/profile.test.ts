@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import { ageOn, isValidCpfDigits, makeProfile } from "../../src/core/profile";
+import { ageOn, isValidCpfDigits, makeProfile, withName } from "../../src/core/profile";
 import { createRng } from "../../src/core/rng";
 import { digitsOf } from "../../src/core/text";
 
@@ -44,5 +44,16 @@ describe("profile", () => {
     const p = { ...makeProfile(createRng("p")), birth: { day: 20, month: 11, year: 1990 } };
     expect(ageOn(p, { year: 2026, month: 11, day: 19 })).toBe(35);
     expect(ageOn(p, { year: 2026, month: 11, day: 20 })).toBe(36);
+  });
+
+  it("renames a person: name parts, signature and the mother's surname follow", () => {
+    const p = withName(makeProfile(createRng("p")), "Rolando Escada Abaixo");
+    expect(p.firstName).toBe("Rolando");
+    expect(p.middleName).toBe("Escada");
+    expect(p.lastName).toBe("Abaixo");
+    expect(p.signature).toBe("R. Abaixo");
+    expect(p.motherName.endsWith(" Abaixo")).toBe(true);
+    expect(withName(p, "Errata de Campos").middleName).toBe("de");
+    expect(() => withName(p, "Cher")).toThrow();
   });
 });

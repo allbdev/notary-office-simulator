@@ -3,6 +3,8 @@ import { TICK_MS } from "../core/clock";
 import { dailySeed, isDateKey, localDateKey } from "../core/daily";
 import { Game, simulate, type Action } from "../core/game";
 import { generateChain } from "../core/generator";
+import { withPlayerName } from "../core/chain";
+import { PLAYER_NAMES } from "../content/names";
 import { resultOf } from "../core/result";
 import { bestRoute } from "../core/solver";
 import { t, type Locale } from "../content/i18n";
@@ -25,6 +27,8 @@ export interface AppOptions {
   date?: string | null;
   /** Test only: run the clock faster. */
   speed?: number;
+  /** Random numbers for picking the player's name (tests pass a fixed one). */
+  random?: () => number;
   /** The address pasted under the share text. */
   url?: string;
   clipboard?: (text: string) => Promise<void>;
@@ -40,7 +44,10 @@ type Screen = "landing" | "play" | "result";
  */
 export class App {
   locale: Locale;
-  readonly chain: Chain;
+  /** Today's chain, with the player's name for this run. */
+  chain!: Chain;
+  private readonly baseChain: Chain;
+  private nameIndex = 0;
   game: Game | null = null;
   /** Test hook: stops the clock (used to photograph the design boards). */
   paused = false;
@@ -70,9 +77,23 @@ export class App {
         : localDateKey((opts.now ?? (() => new Date()))());
     const seed = opts.seed ? `practice:${opts.seed}` : dailySeed(today);
     this.runId = opts.seed ? `practice.${opts.seed}.${today}` : today;
-    this.chain = generateChain(seed, today);
+    this.baseChain = generateChain(seed, today);
+    const saved = this.store.run(this.runId);
+    this.setName(typeof saved?.name === "number" ? saved.name : this.pickName());
     this.locale = initialLocale(this.store, []);
     this.toasts = h("div", { class: "toast-area", "aria-live": "assertive" });
+  }
+
+  private pickName(): number {
+    return (
+      Math.floor((this.opts.random ?? Math.random)() * PLAYER_NAMES.length) % PLAYER_NAMES.length
+    );
+  }
+
+  private setName(index: number): void {
+    this.nameIndex =
+      Number.isInteger(index) && index >= 0 && index < PLAYER_NAMES.length ? index : 0;
+    this.chain = withPlayerName(this.baseChain, PLAYER_NAMES[this.nameIndex]!);
   }
 
   get context(): PlayContext {
@@ -94,7 +115,13 @@ export class App {
     try {
       return simulate(this.chain, saved.inputs, saved.tick);
     } catch {
-      this.store.saveRun(this.runId, { v: 1, seed: this.chain.seed, inputs: [], tick: 0 });
+      this.store.saveRun(this.runId, {
+        v: 1,
+        seed: this.chain.seed,
+        name: this.nameIndex,
+        inputs: [],
+        tick: 0,
+      });
       return null;
     }
   }
@@ -168,6 +195,8 @@ export class App {
   /** Starts or resumes today's run, or shows the result if it's done. */
   begin(): void {
     const saved = this.store.run(this.runId);
+    if (typeof saved?.name === "number") this.setName(saved.name);
+    else if (!saved || saved.inputs.length === 0) this.setName(this.pickName());
     const restored = saved ? this.restore(saved) : null;
     if (saved?.result && restored) {
       this.game = restored;
@@ -244,6 +273,7 @@ export class App {
       this.store.saveRun(this.runId, {
         v: 1,
         seed: this.chain.seed,
+        name: this.nameIndex,
         inputs: game.inputs,
         tick: game.tick,
         result: resultOf(game),
@@ -275,6 +305,7 @@ export class App {
     this.store.saveRun(this.runId, {
       v: 1,
       seed: this.chain.seed,
+      name: this.nameIndex,
       inputs: game.inputs,
       tick: game.tick,
       result: game.over ? resultOf(game) : undefined,
