@@ -2,7 +2,7 @@
 
 > *You only need one stamp.* A free daily browser game: get one document stamped at a Brazilian cartório before the windows close for lunch. Today's bureaucracy is generated from a seed, and it is the same for everyone.
 
-**Status:** plan and mockups. Nothing is built yet (see `ROADMAP.md`).
+**Status:** the first version is playable end to end, on desktop and phone, in English and Portuguese. Live at https://allbdev.github.io/notary-office-simulator/ once Pages is on (see `TODO_FOR_YOU.md`). What's left is playtesting and tuning (see `ROADMAP.md`).
 
 Player-facing text is English by default, with a Brazilian Portuguese toggle. Code, comments and docs are in English.
 
@@ -12,7 +12,7 @@ Player-facing text is English by default, with a Brazilian Portuguese toggle. Co
 | [`ROADMAP.md`](ROADMAP.md) | Ordered task list and current progress |
 | [`CLAUDE.md`](CLAUDE.md) | Project rules (language, testing, git workflow, design sync, architecture) |
 | [`TODO_FOR_YOU.md`](TODO_FOR_YOU.md) | Open decisions and things only the developer can do |
-| [`designs/`](designs) | Screen, document, stamp and window mockups (exports of the design canvas) |
+| [`designs/`](designs) | The design canvas boards: screens captured from the game (PT-BR, and `en/`), plus documents, stamps, windows and art direction |
 | [`marketing/`](marketing) | Press kit and launch posts |
 
 ## How it plays
@@ -30,6 +30,21 @@ The game is a pure function of a seed and the player's inputs.
 - **Generation with guarantees.** A seeded generator builds a dependency graph of documents from the goal, so every daily chain is solvable by construction. Property-based tests run a solver over thousands of seeds and check that each one finishes within a time bound.
 - **Deterministic simulation.** Windows, queues, lunch breaks and the 30× cartório clock are state machines advanced in fixed ticks. A replay or a bug report is a seed plus an input log.
 - **A game made of forms.** Forms are real HTML form controls: playable with a keyboard and a screen reader, readable on a phone.
+
+### The numbers
+
+`npm run seed-report` over 2,000 consecutive days (the discovery solver plays like a careful first-time player who never misreads a label; people take roughly twice as long):
+
+| | p10 | median | p90 | max |
+|---|---|---|---|---|
+| Discovery solver | 0:37 | 1:18 | 3:01 | 5:41 |
+| Window visits | 7 | 8 | 10 | 11 |
+
+The fairness bound is 6:00 for the discovery solver. 0.1% of days need their hours or events re-rolled to fit; none needed the gentle fallback. A property test checks the bound for 10,000 consecutive days plus 500 random seeds on every run of the suite.
+
+### Replaying a bug
+
+The game saves the input log in `localStorage` (`cartorio.run.<date>`): a list of `{ tick, action }`. `simulate(chain, inputs, tick)` in `src/core/game.ts` rebuilds the exact state, so a bug report is the date (or seed) plus that log.
 
 ## Requirements
 
@@ -56,7 +71,9 @@ npm run preview      # serve the build
 | **Tab** / **Shift+Tab** | Tap | Move between windows, fields and buttons |
 | **Enter** | Tap | Go to a window, hand in, confirm |
 | Type | Type | Fill a field |
-| **Esc** | Back button | Back to the hall |
+| **Esc** | Back button | Close the form |
+
+Dev and test URL parameters (not offered in the UI): `?seed=abc` plays a practice chain, `?date=2026-11-19` picks a day, `?test=1` exposes `window.__cartorio` and allows `&speed=N`.
 
 ## Tests and tools
 
@@ -65,6 +82,7 @@ npm run check        # lint + typecheck + unit tests + build (run before every c
 npm test             # Vitest (unit + property tests)
 npm run e2e          # Playwright smoke test
 npm run seed-report  # par times and chain stats across many seeds
+npm run designs      # capture the design-canvas screen boards from the game (needs `npm run preview` running)
 ```
 
 GitHub Actions runs `check` and the e2e smoke test on every push and pull request, and deploys `main`.
@@ -77,11 +95,10 @@ src/
                windows, queues, clock, simulation, scoring, share string. No DOM.
   content/     Windows, form templates, traps, lines, events (typed data),
                and locales/en.ts + locales/pt-BR.ts.
-  ui/          Canvas hall and DOM paper (forms, ticket, folder, stamps).
+  ui/          Canvas hall and DOM paper (forms, ticket, folder, stamps), app loop, storage.
   main.ts      Wiring.
 tests/         Vitest tests mirroring src/, plus e2e/ (Playwright).
-public/        Fonts and hall art.
-tools/         Seed report, design-board screenshots.
+tools/         Seed report, design-board capture (tools/designs/).
 designs/       Mockups (reference only, not used in the game).
 marketing/     Press kit and posts.
 ```

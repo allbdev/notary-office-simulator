@@ -3,7 +3,7 @@
 > *Você só precisa de um carimbo.* You only need one stamp.
 > A free, open-source daily browser game, played from a link. A portfolio piece: the code is part of the product.
 
-**Author:** Vinícius Albuquerque Barros · **Written:** 18 Nov 2026 · **Updated:** 19 Nov 2026 · **Status:** plan and mockups, nothing built
+**Author:** Vinícius Albuquerque Barros · **Written:** 18 Nov 2026 · **Updated:** 19 Nov 2026 · **Status:** first version built and playable; playtests next
 
 Mockups live on the design canvas "Cartório Simulator — Mockups" (https://claude.ai/artifact/Up5fwDm2a96skeVgn3PWt9) and as JPG exports in `designs/`. The canvas and this file are kept in sync both ways (see `CLAUDE.md`). All form names, traps and lines are first drafts. Effort figures are estimates, not measurements.
 
@@ -47,7 +47,7 @@ Each window only tells you the **next** step. The rest you find out.
 - Daily seed, challenge number, and a share string.
 
 **Later**
-- Random events (system down, stamp out of ink, ticket skipped). Designed on the canvas already (board 7); scheduled after the first version in `ROADMAP.md`.
+- ~~Random events~~ (built: system down, stamp out of ink, ticket skipped).
 - A practice mode with custom seeds.
 - A leaderboard, which would be the first thing here to need a backend.
 
@@ -73,21 +73,23 @@ About 20 form templates with slots; the daily seed picks which ones, in which or
 | DARF 0,37 | Taxa de expediente do expediente | The amount must be written wrong on purpose |
 | Anexo Ú | Declaração de que não há anexos | It is itself an annex; tick accordingly |
 | Cópia da Cópia | Requisição de cópia autenticada de cópia simples | Needs the copy, not the original; bringing the original sends you back |
-| Protocolo de Protocolo | Comprovante de que o protocolo foi protocolado | Expires 60 seconds of cartório time after printing |
+| Protocolo de Protocolo | Comprovante de que o protocolo foi protocolado | The time must match the wall clock when you hand it in (±15 cartório minutes) |
 | Ficha de Firma | Cartão de autógrafo | Signatures that must differ from each other |
 
-Rules shown at a window change per form ("Campo vazio volta. Campo certo demais também levanta suspeita."). Every send-back has a joke.
+All 21 templates are in `src/content/forms.ts` (two of them, DARF 0,37 and GRU 1,99, are fees paid at window 5); their words are in the locale files. Rules shown at a window change per form ("Campo vazio volta. Campo certo demais também levanta suspeita."). Every send-back has a joke.
 
 ## 7. Clock, queues and events
 
-- **Two clocks:** the cartório clock runs **30× faster** than real time (about 12 real seconds per ticket called); "seu tempo" is real elapsed time and is the score.
+- **Two clocks:** the cartório clock runs **30× faster** than real time, from 11:00 to closing at 15:00 (8 real minutes); "seu tempo" is real elapsed time and is the score. Service takes 6 to 10 real seconds per person depending on the window.
+- **Crowd:** each window starts with 0 to 3 people in line and people keep arriving at about 90% of the rate the window serves them.
 - **Queues:** take a ticket (senha, e.g. A052) at a window; the LED panel calls numbers; switching lines loses your place.
 - **Opening hours:** windows open, close and go to lunch on the cartório clock; the hall shows each window's status (open + queue length, lunch + return time, closing soon).
-- **Events (later):** drawn by the daily seed, so everyone gets the same ones. Example: "SISTEMA FORA DO AR · volta em 0:20 · o relógio não para": no window serves, but paper-only work (filling forms) can continue.
+- **Events:** drawn by the daily seed, so everyone gets the same ones: "SISTEMA FORA DO AR · volta em 0:20 · o relógio não para" (no window serves; paperwork continues), a window out of stamp ink for 15 seconds, and the panel skipping your ticket (you go to the back of the line). About three days in four have at least one.
+- **Fairness:** a discovery solver (acts only on what window 3 has revealed, fills every form right) must finish within 6 real minutes, or the hours and events are re-rolled; after 12 tries a gentle schedule with thinner lines is used. Property tests check this for 10,000 days.
 
 ## 8. Result and sharing
 
-- The final screen is the stamped declaration, the stats (time, forms, send-backs) and **your path through the windows**: green resolved, amber waited, red sent back.
+- The final screen is the stamped declaration, the stats (time, forms handed in, send-backs) and **your path through the windows**: green resolved (you got a stamp), amber told something (a requirement, a jammed copier), red sent back.
 - Share string (draft): `Cartório Simulator nº 323` / `04:37 · 6 formulários · 3 voltas` / the path grid / the game URL. Localised wording, same numbers and grid.
 - "See the ideal path" shows the solver's route after you finish.
 - "Tomorrow there's another one. Today's doesn't open again."
@@ -125,6 +127,8 @@ A real cartório, played on real paper: a rendered hall (five guichês, queue pa
 | VT323 | LED panel and ticket numbers |
 
 All four are OFL and are self-hosted in the build (no runtime calls to Google Fonts).
+
+**The hall** is drawn in Canvas 2D from shapes (booths, glass, the LED panel, the wall clock, ropes, plastic chairs, people in line) as a placeholder until the hall art is decided (`TODO_FOR_YOU.md`).
 
 **Screens on the canvas:** 1 Landing · 2 The hall · 3 At the window · 4 Filling a form · 5 Waiting in line · 6 Sent back · 7 Event: system down · 8 Result and share · Phone layouts (the hall becomes a list of windows; a form is one field at a time; the result fits one screenshot).
 

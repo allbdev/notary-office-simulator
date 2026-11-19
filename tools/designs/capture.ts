@@ -141,6 +141,16 @@ async function phones(browser: Browser, locale: string, formSeed: string) {
 }
 
 const browser = await chromium.launch();
+
+// The link-preview image (Open Graph), from the English landing page.
+{
+  const page = await open(browser, "en", "og", { width: 1200, height: 630 });
+  await page.addStyleTag({ content: ".topbar, .landing > section > .small { display: none !important; } .landing { padding-top: 0; min-height: 630px; }" });
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  mkdirSync(OUT, { recursive: true });
+  await page.screenshot({ path: join(OUT, "og.png") });
+  await page.context().close();
+}
 const formSeed = await findSeed(browser, "(c) => c.requirements[0].kind === 'protocol' && c.requirements[0].of.kind === 'form' && c.pen === 'blue'");
 const eventSeed = await findSeed(browser, "(c) => c.events.some((e) => e.kind === 'systemDown')");
 for (const locale of LOCALES) {

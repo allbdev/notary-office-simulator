@@ -2,9 +2,9 @@
 
 Exports of the boards on the design canvas **"Cartório Simulator — Mockups"**: https://claude.ai/artifact/Up5fwDm2a96skeVgn3PWt9. Reference only, not used in the game.
 
-The canvas, these files, `GAME_PLAN.md` and the game are kept in sync both ways (see `CLAUDE.md`). When a board changes, its JPG here is refreshed. Once the screens exist in the game, the screen boards are rebuilt from real screenshots (`tools/designs/`, roadmap Phase 5).
+The canvas, these files, `GAME_PLAN.md` and the game are kept in sync both ways (see `CLAUDE.md`).
 
-The copy on the boards is the **PT-BR** locale and a first draft. English is the default locale in the game.
+**Screens (01–09) are captured from the real game** by `npm run designs` (`tools/designs/capture.ts`): PT-BR here, English in `en/` (canvas page "Screens (English)"). The text boards (10–13) are edited by hand on the canvas and exported.
 
 | File | Canvas page | Board | What it shows |
 |---|---|---|---|

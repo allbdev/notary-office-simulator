@@ -20,8 +20,7 @@ The game, the docs and the canvas must always agree:
 - **Canvas → game.** The developer edits boards by hand. Before starting any UI or content task, re-read the boards it touches (Artifact `read`), and bring every difference into the code, the content files and `GAME_PLAN.md`. If a canvas change conflicts with the plan, ask.
 - **Docs too.** `GAME_PLAN.md` §5–§9 (windows, documents, clock, result, look and tokens) describe the same things as the boards; keep them in step.
 - **New looks are tried on the canvas first**, on a new page, then built in the game.
-- **Once screens render, boards show the real game:** screen boards use screenshots captured from the game (`tools/designs/`, roadmap Phase 5), uploaded as canvas assets, replacing the drawn mockups.
-- The canvas currently shows the **PT-BR** copy. English is the default locale, so EN copy changes are reflected on the canvas too (roadmap Phase 5 adds EN versions of the screen boards).
+- **Boards show the real game:** the screen boards (pages "Screens" in PT-BR and "Screens (English)") are captures from the game. After any visible change: `npm run build && npm run preview`, then `npm run designs -- --out=<dir>`; convert to JPG (`sips -s format jpeg -s formatOptions 82 --resampleWidth 1920`), copy into `designs/` (PT-BR) and `designs/en/`, upload them as canvas assets and point each board's `<img>` at its new `/_blob/` id. The text boards (Documents, Stamps, Windows, Art direction) are edited by hand on the canvas.
 - If Claude can't regenerate a JPG export itself, list the stale files in `TODO_FOR_YOU.md`.
 
 ## Language rules (strict)
@@ -84,6 +83,7 @@ The game, the docs and the canvas must always agree:
 - **Accessibility.** Playable with keyboard only and with a screen reader; text contrast 4.5:1; colour never carries meaning alone (status always has a word or a shape); `prefers-reduced-motion` disables stamp and queue animations.
 - **Storage.** `localStorage` only, for per-player conveniences (today's result, streak, language, settings), always in try/catch. No accounts, no server, no personal data. The player's name on forms is generated from the seed, never asked for.
 - **Sharing.** The share string is built in `src/core` from the result (numbers + path grid) and localised at the edge. Copy to clipboard with a visible fallback.
+- **Test hooks.** `?test=1` exposes `window.__cartorio` (the `App`) with `autoplay()` (finish with the solver's route), `paused` and `&speed=N`; `?seed=` and `?date=` pick a chain. Used by the e2e tests and the board capture; never linked from the UI.
 - **Performance budget.** First load under 200 KB gzipped JS+CSS (fonts and hall art aside), interactive in under 2 s on a mid-range phone over 4G. No per-frame allocations in the hall render loop.
 
 ## Workflow

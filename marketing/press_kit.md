@@ -14,7 +14,7 @@
 | **Languages** | English, Português (Brasil) |
 | **Session** | 3 to 5 minutes, one new challenge a day |
 | **Source** | Open source, MIT: https://github.com/allbdev/notary-office-simulator |
-| **Play** | [game URL] |
+| **Play** | https://allbdev.github.io/notary-office-simulator/ (once Pages is on) |
 | **Contact** | [press email] |
 
 ## Short description
@@ -33,8 +33,8 @@
 
 ## For developers
 
-[Short paragraph and link to the README's architecture section: seeded generator with property-based tests, deterministic simulation, accessible forms.]
+Every day's chain is generated from a seed and guaranteed finishable: a solver plays each day like a careful first-timer, and property tests check 10,000 days. The run is a pure function of seed and inputs, so replays and bug reports are an input log. Forms are real HTML form controls, playable with a keyboard and a screen reader. TypeScript, Vite, Canvas 2D, Vitest, fast-check, Playwright. See the README: https://github.com/allbdev/notary-office-simulator
 
 ## Images
 
-[Screenshots from `designs/` once they are real game captures (roadmap Phase 5).]
+Screens captured from the game: `designs/` (Portuguese) and `designs/en/` (English). Link preview image: `public/og.jpg`.
