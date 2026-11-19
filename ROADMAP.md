@@ -80,7 +80,7 @@
 35. [x] Today's result and streak saved in `localStorage`; today's challenge can't be replayed for a new score
 36. [x] Stamps drawn rough (rotation, uneven ink) and the stamp moment; `prefers-reduced-motion` respected
 37. [x] "How it works" screen
-38. [~] Performance budget check (bundle size, load on a mid-range phone); Lighthouse in CI (bundle: 38 KB gzipped JS + 5 KB CSS, far under budget; Lighthouse in CI not added; a real mid-range phone check is in `TODO_FOR_YOU.md`)
+38. [x] Performance budget check (bundle size, load on a mid-range phone) (`npm run size`, part of `check` and CI: 42 KB gzipped JS + CSS against a 200 KB budget; Lighthouse dropped in favour of this; a real phone check is in `TODO_FOR_YOU.md`)
 
 **Exit:** the first version from `GAME_PLAN.md` §4 is playable end to end on desktop and phone, in both languages. ✅
 

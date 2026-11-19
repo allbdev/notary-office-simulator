@@ -54,7 +54,7 @@ The game, the docs and the canvas must always agree:
   ```sh
   npm run check && git commit ...
   ```
-  (`npm run check` = lint + typecheck + unit tests + build.)
+  (`npm run check` = lint + typecheck + unit tests + build + bundle-size budget.)
 
 ## Git workflow
 

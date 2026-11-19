@@ -18,9 +18,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build && npm run size",
     "seed-report": "tsx tools/seed-report.ts",
-    "designs": "tsx tools/designs/capture.ts"
+    "designs": "tsx tools/designs/capture.ts",
+    "size": "tsx tools/size-check.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
