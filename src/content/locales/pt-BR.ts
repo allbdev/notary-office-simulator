@@ -20,7 +20,7 @@ const ptBR: LocaleDict = {
     yourTime: "seu tempo",
     ticket: "sua senha",
     challenge: "desafio",
-    challengeValue: "nº {number} · {goal}",
+    challengeValue: "nº {number} · {date} · {goal}",
     noTicket: "—",
   },
   landing: {
@@ -226,7 +226,7 @@ const ptBR: LocaleDict = {
     },
     "5": {
       role: "Caixa",
-      takes: "Recebe a taxa, devolve o comprovante.",
+      takes: "Recebe a taxa, devolve o DARF pago.",
       mania: "Fecha mais cedo e não tem troco.",
       rules: [
         "Valor se escreve como o formulário pede, não como o senhor gosta.",
@@ -337,8 +337,8 @@ const ptBR: LocaleDict = {
           refusal: "Sem vírgula. Sem ponto. Está escrito. Quase em maiúsculas.",
         },
         code: {
-          label: "Código da receita (invente, só números)",
-          refusal: "Invente um código. Só números, pelo menos quatro. Criatividade tem regra.",
+          label: "Código da receita (invente)",
+          refusal: "Invente um código. Qualquer um. Mas invente.",
         },
         cpf: {
           label: "CPF do contribuinte, só números",

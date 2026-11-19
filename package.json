@@ -2,7 +2,7 @@
   "name": "notary-office-simulator",
   "private": true,
   "version": "0.1.0",
-  "description": "Cartório Simulator: a daily browser game about getting one document stamped.",
+  "description": "Cart\u00f3rio Simulator: a daily browser game about getting one document stamped.",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -19,7 +19,8 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
-    "seed-report": "tsx tools/seed-report.ts"
+    "seed-report": "tsx tools/seed-report.ts",
+    "designs": "tsx tools/designs/capture.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

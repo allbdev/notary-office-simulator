@@ -42,6 +42,8 @@ export class App {
   locale: Locale;
   readonly chain: Chain;
   game: Game | null = null;
+  /** Test hook: stops the clock (used to photograph the design boards). */
+  paused = false;
   screen: Screen = "landing";
   private readonly store: Store;
   private readonly runId: string;
@@ -342,6 +344,12 @@ export class App {
   /** Advances the game with real time. */
   tickFrame(): void {
     if (this.screen !== "play" || !this.game || this.game.over) return;
+    if (this.paused) {
+      this.baseTick = this.game.tick;
+      this.baseTime = this.perfNow();
+      this.play?.update();
+      return;
+    }
     const target =
       this.baseTick + Math.floor(((this.perfNow() - this.baseTime) * this.speed) / TICK_MS);
     if (target > this.game.tick) {

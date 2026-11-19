@@ -21,3 +21,6 @@ blob-report/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Design board captures (tools/designs/capture.ts)
+design-captures/

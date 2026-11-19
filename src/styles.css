@@ -435,7 +435,7 @@ a:hover {
 
 .stage {
   position: relative;
-  min-height: 520px;
+  min-height: 0;
   border-radius: 3px;
   overflow: hidden;
 }
@@ -842,9 +842,8 @@ details.id > summary {
 }
 
 .refusal-stamp {
-  position: absolute;
-  right: 14px;
-  top: -18px;
+  align-self: flex-end;
+  margin: -4px -6px -10px 0;
 }
 
 /* queue */

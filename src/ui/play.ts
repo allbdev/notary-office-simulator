@@ -1,7 +1,7 @@
 import { formatClock, formatCountdown, formatDuration, tickToClock } from "../core/clock";
 import { FINAL_WINDOW, WINDOW_IDS, type WindowId } from "../core/docs";
 import type { Message } from "../core/game";
-import { docName, t, windowName } from "../content/i18n";
+import { docName, formatDate, t, windowName } from "../content/i18n";
 import { windowSpec } from "../content/windows";
 import type { PlayContext } from "./context";
 import { clear, h, setText } from "./dom";
@@ -113,6 +113,7 @@ export class PlayScreen {
       this.hudEls["challenge"],
       t(locale, "header.challengeValue", {
         number: chain.number,
+        date: formatDate(locale, chain.dateKey),
         goal: t(locale, `goals.${chain.goal}.short`),
       }),
     );
@@ -207,6 +208,13 @@ export class PlayScreen {
     if (v === "hall") this.stage.append(this.renderHall());
     else if (v === "queue") this.stage.append(this.renderQueue());
     else this.stage.append(this.renderWindow());
+    // Keyboard and screen-reader players land on what they can do next.
+    if (v === "window" || v === "queue") {
+      const target = this.stage.querySelector<HTMLElement>(
+        ".actions-row .btn-primary, .actions-row .btn",
+      );
+      if (target && !document.querySelector(".desk")) target.focus({ preventScroll: true });
+    }
   }
 
   private renderHall(): HTMLElement {

@@ -21,7 +21,7 @@ const en = {
     yourTime: "your time",
     ticket: "your ticket",
     challenge: "challenge",
-    challengeValue: "nº {number} · {goal}",
+    challengeValue: "nº {number} · {date} · {goal}",
     noTicket: "—",
   },
   landing: {
@@ -227,7 +227,7 @@ const en = {
     },
     "5": {
       role: "Cashier",
-      takes: "Takes the fee, gives back the receipt.",
+      takes: "Takes the fee, gives back the paid DARF.",
       mania: "Closes early and has no change.",
       rules: [
         "Amounts are written the way the form asks, not the way you'd like.",
@@ -338,8 +338,8 @@ const en = {
           refusal: "No comma. No point. We said so. In capitals, nearly.",
         },
         code: {
-          label: "Revenue code (make one up, digits)",
-          refusal: "Make up a code. Digits only, at least four. Creativity has rules.",
+          label: "Revenue code (make one up)",
+          refusal: "Make up a code. Any code. But make one up.",
         },
         cpf: { label: "Taxpayer's CPF, digits only", refusal: "Your CPF, just the digits. Yours." },
       },

@@ -62,7 +62,7 @@ export const FORMS: readonly FormTemplate[] = [
     trapField: "amount",
     fields: [
       text("amount", { type: "amountNoSeparators", cents: 37 }),
-      text("code", { type: "digitsOnly", minLength: 4 }),
+      text("code", { type: "nonEmpty" }),
       text("cpf", { type: "profile", key: "cpf", transform: "digits" }),
     ],
   },
