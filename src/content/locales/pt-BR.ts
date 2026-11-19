@@ -46,6 +46,7 @@ const ptBR: LocaleDict = {
     streakOne: "Sequência: 1 dia",
   },
   hall: {
+    backToLine: "Voltar pra minha fila",
     label: "O saguão",
     open: "Aberto · fila de {n}",
     openEmpty: "Aberto · sem fila",
@@ -60,6 +61,8 @@ const ptBR: LocaleDict = {
     panel: "Painel: chamando {ticket}",
     panelLabel: "SENHA",
     panelWindow: "GUICHÊ",
+    boothClosed: "FECHADO",
+    boothAway: "VOLTO JÁ",
     take: "Retirar senha para o {window}: {role}",
     lastMessage: "último recado",
     welcome: "“Firmas é no guichê 3. Retire a senha e aguarde ser chamado.”",
@@ -91,6 +94,8 @@ const ptBR: LocaleDict = {
     idSignature: "Assinatura",
   },
   window: {
+    openForm: "Ver o formulário",
+    goTo: "Ir ao {window}",
     attendant: "atendente · {window}",
     hand: "Entregar o que tenho",
     back: "Voltar ao saguão",
@@ -100,6 +105,7 @@ const ptBR: LocaleDict = {
     missing: "ainda falta",
   },
   queue: {
+    lookHall: "Olhar o saguão",
     inLine: "na fila do {window}",
     ahead: "{n} pessoas na sua frente.",
     aheadOne: "1 pessoa na sua frente.",
@@ -147,6 +153,8 @@ const ptBR: LocaleDict = {
     outOfInk: "O {window} ficou sem tinta de carimbo. Volta em {time}.",
   },
   result: {
+    declaration: "DECLARAÇÃO",
+    continue: "Ver o resultado",
     done: "desafio nº {number} · concluído",
     failed: "desafio nº {number} · hoje não",
     title: "Firma reconhecida.",
@@ -282,6 +290,15 @@ const ptBR: LocaleDict = {
       done: "Escritura registrada.",
       body: "Declaro ser proprietário de uma (1) vaga de moto, de 1,10 m por 2,00 m, e que não possuo moto, o que é outro procedimento.",
     },
+  },
+  stamps: {
+    w1: "PROTOCOLADO",
+    w2: "CÓPIA",
+    w4: "CONFERE",
+    w5: "PAGO",
+    refused: "INDEFERIDO",
+    jam: "TRAVOU",
+    sub: "TABELIONATO · 3º OFÍCIO",
   },
   docs: {
     id: "RG e CPF",

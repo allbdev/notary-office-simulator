@@ -47,6 +47,7 @@ const en = {
     streakOne: "Streak: 1 day",
   },
   hall: {
+    backToLine: "Back to my line",
     label: "The hall",
     open: "Open · line of {n}",
     openEmpty: "Open · no line",
@@ -61,9 +62,11 @@ const en = {
     panel: "Panel: calling {ticket}",
     panelLabel: "TICKET",
     panelWindow: "WINDOW",
+    boothClosed: "CLOSED",
+    boothAway: "BACK SOON",
     take: "Take a ticket for {window}: {role}",
     lastMessage: "last message",
-    welcome: "“Firmas is window 3. Take a ticket and wait to be called.”",
+    welcome: "“Signatures is window 3. Take a ticket and wait to be called.”",
     paperOnly: "Paperwork doesn't need the system. Fill in what you can.",
   },
   folder: {
@@ -92,6 +95,8 @@ const en = {
     idSignature: "Signature",
   },
   window: {
+    openForm: "Look at the form",
+    goTo: "Go to {window}",
     attendant: "attendant · {window}",
     hand: "Hand in what I have",
     back: "Back to the hall",
@@ -101,6 +106,7 @@ const en = {
     missing: "still missing",
   },
   queue: {
+    lookHall: "Look around the hall",
     inLine: "in line at {window}",
     ahead: "{n} people ahead of you.",
     aheadOne: "1 person ahead of you.",
@@ -148,6 +154,8 @@ const en = {
     outOfInk: "{window} is out of stamp ink. Back in {time}.",
   },
   result: {
+    declaration: "DECLARATION",
+    continue: "See the result",
     done: "challenge nº {number} · done",
     failed: "challenge nº {number} · not today",
     title: "Signature notarised.",
@@ -283,6 +291,15 @@ const en = {
       done: "Deed registered.",
       body: "I declare that I own one (1) motorbike parking space, 1.10 m by 2.00 m, and that I do not own a motorbike, which is a separate procedure.",
     },
+  },
+  stamps: {
+    w1: "FILED",
+    w2: "COPY",
+    w4: "TRUE COPY",
+    w5: "PAID",
+    refused: "SENT BACK",
+    jam: "JAMMED",
+    sub: "NOTARY · 3RD OFFICE",
   },
   docs: {
     id: "ID card and CPF",

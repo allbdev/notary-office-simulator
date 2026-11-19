@@ -109,7 +109,8 @@ interface WindowRuntime {
   nextArrival: number;
 }
 
-export const FIRST_TICKET = 1;
+/** The morning's first ticket number (the LED panel shows A040 and up). */
+export const FIRST_TICKET = 40;
 
 export class Game {
   readonly chain: Chain;
