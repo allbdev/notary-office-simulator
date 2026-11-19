@@ -166,7 +166,7 @@ describe("validators", () => {
           }
         }
       }),
-      { numRuns: 100 },
+      { numRuns: 300 },
     );
   });
 

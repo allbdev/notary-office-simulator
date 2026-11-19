@@ -97,13 +97,19 @@ function cpfCheckDigit(digits: number[]): number {
   return rest === 10 ? 0 : rest;
 }
 
-/** Eleven digits with valid CPF check digits. */
+/**
+ * Eleven digits with valid CPF check digits, and at least one even digit (form 27-B asks for the
+ * even digits only, so there must be some).
+ */
 export function makeCpfDigits(rng: Rng): string {
-  const base = Array.from({ length: 9 }, () => rng.int(0, 9));
-  if (base.every((d) => d === base[0])) base[8] = (base[8]! + 1) % 10;
-  const d1 = cpfCheckDigit(base);
-  const d2 = cpfCheckDigit([...base, d1]);
-  return [...base, d1, d2].join("");
+  for (;;) {
+    const base = Array.from({ length: 9 }, () => rng.int(0, 9));
+    if (base.every((d) => d === base[0])) base[8] = (base[8]! + 1) % 10;
+    const d1 = cpfCheckDigit(base);
+    const d2 = cpfCheckDigit([...base, d1]);
+    const digits = [...base, d1, d2];
+    if (digits.some((d) => d % 2 === 0)) return digits.join("");
+  }
 }
 
 export function isValidCpfDigits(digits: string): boolean {

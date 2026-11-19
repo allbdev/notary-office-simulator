@@ -16,6 +16,16 @@ describe("profile", () => {
     );
   });
 
+  it('always has an even digit in the CPF (form 27-B needs one); regression: seed "{/"', () => {
+    for (const seed of ["{/", ...Array.from({ length: 2000 }, (_, i) => `even-${i}`)]) {
+      const digits = digitsOf(makeProfile(createRng(seed)).cpf);
+      expect(
+        Array.from(digits).some((d) => Number(d) % 2 === 0),
+        seed,
+      ).toBe(true);
+    }
+  });
+
   it("rejects bad CPFs", () => {
     expect(isValidCpfDigits("11111111111")).toBe(false);
     expect(isValidCpfDigits("123")).toBe(false);
