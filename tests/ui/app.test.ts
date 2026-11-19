@@ -131,4 +131,21 @@ describe("app", () => {
     makeApp(store);
     expect(button(/See today's result/)).toBeTruthy();
   });
+
+  it("a damaged saved run starts over instead of breaking the page", () => {
+    const m = memory();
+    m.setItem(
+      "cartorio.run.practice.ui-test.2026-11-19",
+      JSON.stringify({
+        v: 1,
+        seed: "x",
+        tick: 50,
+        inputs: [{ tick: 1, action: { type: "takeTicket", window: 99 } }],
+      }),
+    );
+    const app = makeApp(new Store(m));
+    button(/Back to the line|Take a ticket/)!.click();
+    expect(app.screen).toBe("play");
+    expect(app.game!.tick).toBe(0);
+  });
 });

@@ -13,7 +13,7 @@ import { lineText } from "./format";
 import { landing, type LandingState } from "./landing";
 import { PlayScreen } from "./play";
 import { resultScreen } from "./result";
-import { Store, initialLocale } from "./store";
+import { Store, initialLocale, type SavedRun } from "./store";
 
 export interface AppOptions {
   root: HTMLElement;
@@ -89,11 +89,19 @@ export class App {
     };
   }
 
+  /** Rebuilds a saved run; a damaged save starts over instead of breaking the page. */
+  private restore(saved: SavedRun): Game | null {
+    try {
+      return simulate(this.chain, saved.inputs, saved.tick);
+    } catch {
+      this.store.saveRun(this.runId, { v: 1, seed: this.chain.seed, inputs: [], tick: 0 });
+      return null;
+    }
+  }
+
   start(): void {
     const saved = this.store.run(this.runId);
-    if (saved?.result) {
-      this.game = simulate(this.chain, saved.inputs, saved.tick);
-    }
+    if (saved?.result) this.game = this.restore(saved);
     this.renderLanding();
     this.loop();
   }
@@ -160,12 +168,13 @@ export class App {
   /** Starts or resumes today's run, or shows the result if it's done. */
   begin(): void {
     const saved = this.store.run(this.runId);
-    if (saved?.result) {
-      this.game = simulate(this.chain, saved.inputs, saved.tick);
+    const restored = saved ? this.restore(saved) : null;
+    if (saved?.result && restored) {
+      this.game = restored;
       this.renderResult();
       return;
     }
-    this.game = saved ? simulate(this.chain, saved.inputs, saved.tick) : new Game(this.chain);
+    this.game = restored ?? new Game(this.chain);
     this.lastMessageCount = this.game.messages.length;
     this.baseTick = this.game.tick;
     this.baseTime = this.perfNow();
